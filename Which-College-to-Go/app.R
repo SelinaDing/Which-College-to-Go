@@ -8,32 +8,54 @@
 #
 
 library(shiny)
-library(tidyverse)
 library(leaflet)
 library(leaflet.extras)
 library(ggmap)
+library(tidyverse)
 
-# Define UI for application that draws a histogram
-ui <- fluidPage(
-   
-   # Application title
-   titlePanel("Which College to Go"),
-   leafletOutput("mymap"),
-   p()
-)
+# Define the UI
+# Use a pretty theme
 
-# Define server logic required to draw a histogram
+ui <- fluidPage(fluidPage(theme = shinytheme("united")),
+                
+                # Application title
+                
+                titlePanel("Which College to Go"),
+                
+                sidebarLayout(
+                  sidebarPanel(
+                    textInput(inputId = "name",
+                              label = "Search a college name:"),
+                    
+                    # And a button allowing users to download my data and further poke around 
+                    
+                    downloadButton(outputId = "download_data", 
+                                   label = "Download data")),
+                  
+                  # Define the main panel
+                  
+                  mainPanel(
+                    
+                    # Use a tab layout to separate the various elements
+                    
+                    tabsetPanel(type = "tabs",
+                                tabPanel("About this map", htmlOutput("about")),
+                                tabPanel("Map for Opportunity", leafletOutput("mymap")))
+                    
+                  )))
+
+# Define server
+
 server <- function(input, output) {
   # load data
-  ma_c <- read_rds("ma_c.rds")
-  
+  college <- read_rds("college.rds")
+  # render map
   output$mymap <- renderLeaflet({
     leaflet() %>% 
-      addProviderTiles(provider = "CartoDB") %>%
-      setView(lat = 41.964569, lng = -70.596297, zoom = 7) %>%
-      addMarkers(lng = ma_c$lon, lat = ma_c$lat, popup = ma_c$name) %>%
-      addSearchOSM() %>%
-      addReverseSearchOSM()
+    addProviderTiles(provider = "CartoDB") %>%
+    addMarkers(lng = college$lon, lat = college$lat, popup = college$name) %>%
+    addSearchOSM() %>%
+    addReverseSearchOSM()
    })
 }
 
