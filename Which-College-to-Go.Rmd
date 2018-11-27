@@ -7,26 +7,26 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(tidyverse)
 library(leaflet)
 library(leaflet.extras)
 library(ggmap)
+library(tidyverse)
 ```
 
 ```{r}
 # load data
 x <- read_csv("Which-College-to-Go/mrc_table1.csv")
 
-ma <- x %>%
-  filter(state == "MA") %>%
+register_google(key = "AIzaSyDGI_AnIDe10T0vEZNOwtLjFwEbGnwTAEY")
 
-geo <- geocode(ma$name, output = "latlona", source = "dsk")
+geo <- geocode(x$name, output = "latlona", source = "google")
 
-ma1 <- left_join(ma, geo, by = c("name" = "address")) %>%
-  filter(!is.na(lon)) %>%
-  filter(name != "New England Institute Of Art")
+college <- bind_cols(x, geo) %>%
+  filter(!is.na(lon)) 
 
-saveRDS(ma1, file = "ma_c.rds")
+saveRDS(college, file = "Which-College-to-Go/college.rds")
 ```
 
+one output on the label, the marker smaller, boundry
+search by state and demographic
 

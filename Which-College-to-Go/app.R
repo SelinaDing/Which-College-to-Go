@@ -16,7 +16,7 @@ library(tidyverse)
 # Define the UI
 # Use a pretty theme
 
-ui <- fluidPage(fluidPage(theme = shinytheme("united")),
+ui <- fluidPage(
                 
                 # Application title
                 
