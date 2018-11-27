@@ -5,3 +5,6 @@ We measure parental income as the average annual household total income before t
 We define the college each child attends as the institution the child attended most frequently during four calendar years in which the child turned 19-22. We group non-college goers (those who attend no college in or before 2013) and late college goers (those first attending college later than age 22) into separate categories. We calculate college-level values as means over students in the 1980, 1981 and 1982 birth cohorts. When data for a college from any of these cohorts are incomplete, we use data from 1983 and 1984 cohorts to obtain an estimate.
 
 Following established disclosure standards, we report estimates rather than exact values of the statistics for each college in this interactive map. The estimates are quite accurate: the estimation error is comparable to the fluctuation in the true statistics across years for a typical college that arises due to sampling error. 
+
+Here is the link of my repo on Github: 
+https://github.com/SelinaDing/Which-College-to-Go 
