@@ -12,6 +12,7 @@ library(leaflet.extras)
 library(ggmap)
 library(tidyverse)
 library(tigris)
+library(scales)
 
 # load data
 
@@ -81,13 +82,38 @@ ui <- fluidPage(theme = shinytheme("slate"),
 
 server <- function(input, output) {
   
+  # render readme
+  
+  output$about <- renderText({
+    "Which college in the United States offers you the best chance to achieve the American Dream?
+    This map is a map of opportunity. 
+    It answers this question using data for over 30 million college students from 1999-2013.
+    The map offers you insight of the median income and intergenerational mobility at each college in the United States. 
+    "
+  })
+  
   # render map
   
   output$mymap <- renderLeaflet({
+    
+    # filter data to input college
+    
+    college <- college %>%
+      mutate(k_median = dollar(k_median)) %>%
+      mutate(mr_ktop1_pq1 = percent(mr_ktop1_pq1/100))
+    
+    data <- college %>%
+      filter(name == input$college)
+    
+    # setview of input college
+    
     leaflet() %>% 
     addProviderTiles(provider = "CartoDB") %>%
-    setView(-98.483330, 38.712046, zoom = 4) %>%
-    addMarkers(lng = college$lon, lat = college$lat, popup = as.character(college$k_median)) %>%
+    setView(data$lon, data$lat, zoom = 13) %>%
+    addCircleMarkers(lng = college$lon, lat = college$lat, 
+                     popup = paste0("<b>", college$name, "</b>","<br/>", "Income Median: ",as.character(college$k_median),
+                                    "</b>","<br/>", "Mobility Rate: ", as.character(college$mr_ktop1_pq1)), 
+                     radius = 3) %>%
     addSearchOSM() %>%
     addReverseSearchOSM()
    })
