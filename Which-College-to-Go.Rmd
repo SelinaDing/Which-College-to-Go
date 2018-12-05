@@ -34,8 +34,42 @@ college <- bind_cols(x, geo) %>%
 
 saveRDS(college, file = "Which-College-to-Go/college.rds")
 ```
+# Getting states geo files.
+
+states <- states(cb=T)
+
+# Deriving the options for the "state".
+
+state_choices <- college %>% 
+  group_by(state) %>% 
+  summarise()
 
 
+  # Geojoining the states geolayer and the cleaned mappable data.
+  
+  data <- geo_join(states, college, "STUSPS", "state")
+  
+  # na of lat/lon makes error, get rid of na
+  data <- subset(data, !is.na(lon))
+  
+  # Creating a color palette based on the number range in the total column
+  
+  pal <- colorNumeric("Blues", domain = data$mr_kq5_pq1)
+  
+  # popup the income of students
+  
+  popup_sb <- paste0(as.character(data$name), ": ", as.character(data$k_median))
+
+    addPolygons(data = data , 
+                fillColor = ~pal(data$mr_kq5_pq1), 
+                fillOpacity = 0.7, 
+                weight = 0.2, 
+                smoothFactor = 0.2) %>%
+    addLegend(pal = pal, 
+              values = data$mr_kq5_pq1, 
+              position = "bottomright", 
+              title = "Mobility Rate: Percent of students who have parents in the Bottom 20% of the income distribution and reach the Top 20% of the income distribution") %>%
+    
 
 one output on the label, the marker smaller, boundry
 search by state and demographic
