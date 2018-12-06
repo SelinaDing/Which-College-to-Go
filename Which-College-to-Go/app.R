@@ -10,6 +10,7 @@ library(shinythemes)
 library(leaflet)
 library(leaflet.extras)
 library(ggmap)
+library(stargazer)
 library(tidyverse)
 library(tigris)
 library(scales)
@@ -62,15 +63,14 @@ ui <- fluidPage(theme = shinytheme("slate"),
                                 
                                 # Summary for tabs.
                                 
-                                tabPanel("About this map", htmlOutput("about")),
+                                tabPanel("About this map", 
+                                         HTML('<center><img src="thefadingame.jpg" height = 500 width = 550 ></center>'),
+                                         htmlOutput("about")),
                                 
                                 # map output
                                 
                                 tabPanel("Map for Opportunity", leafletOutput("mymap")),
                                 
-                                # Tab for viewing plot
-                                
-                                tabPanel("Plot", plotOutput("plot")),
                                 
                                 # Tab for the data view
                                 
@@ -85,10 +85,10 @@ server <- function(input, output) {
   # render readme
   
   output$about <- renderText({
-    "Which college in the United States offers you the best chance to achieve the American Dream?
+    "<br/><b>Which college in the US offers you the best chance to achieve the American Dream?</b><br/><br/>
     This map is a map of opportunity. 
-    It answers this question using data for over 30 million college students from 1999-2013.
-    The map offers you insight of the median income and intergenerational mobility at each college in the United States. 
+    It answers the question using data for over 30 million college students from 1999-2013.
+    The map offers you the insight of the median income and intergenerational mobility at each college in the United States. 
     "
   })
   
@@ -117,7 +117,22 @@ server <- function(input, output) {
     addSearchOSM() %>%
     addReverseSearchOSM()
    })
-}
+  
+  # table of mobility
+  
+  output$data <- renderDataTable({
+    
+    college <- college %>%
+      mutate(k_median = dollar(k_median)) %>%
+      mutate(mr_ktop1_pq1 = percent(mr_ktop1_pq1/100))
+    
+    college %>%
+      arrange(desc(mr_ktop1_pq1)) %>%
+      select(name, state, mr_ktop1_pq1, par_median, k_median)
+
+    })
+    
+  }
 
 # Run the application 
 shinyApp(ui = ui, server = server)
