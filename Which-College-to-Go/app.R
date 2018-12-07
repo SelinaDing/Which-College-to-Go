@@ -69,8 +69,7 @@ ui <- fluidPage(theme = shinytheme("slate"),
                     
                     selectInput(inputId = "variable",
                                 label = "Variable: ",
-                                choices = variable_choices,
-                                selected = "American Dream"),
+                                choices = variable_choices),
                     
                     # And a button allowing users to download my data and further poke around 
                     
@@ -129,7 +128,7 @@ server <- function(input, output) {
 "
   })
   
-  # render readme
+  # render summary of my app
   
   output$about <- renderText({
     "<br/><b>Which college in the US offers you the best chance to achieve the American Dream?</b><br/><br/>
@@ -168,7 +167,7 @@ server <- function(input, output) {
     addReverseSearchOSM()
    })
   
-  # table of variable users choose
+  # render table of variable users choose
   
   output$data <- renderDataTable({
     college %>%
@@ -179,6 +178,17 @@ server <- function(input, output) {
       
       select("Name of the College", State, input$variable)
   })
+  
+  # render download data
+  
+  output$download_data <- downloadHandler(
+    filename = function() {
+      paste("fading_american_dream.csv")
+    },
+    content = function(file) {
+      write.csv(college, file)
+    }
+  )
     
   }
 
